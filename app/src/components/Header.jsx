@@ -7,6 +7,8 @@ import ChatIcon from '../../public/chat.svg';
 import UserAvatar from '../../public/Avatar.png';
 import { useUser } from '../utils/UserContext';
 import { Avatars } from 'appwrite';
+import { account , client} from '../utils/appwrite';
+account
 
 const Header = ({ onCreatePostClick }) => {
   const navigate = useNavigate();
@@ -14,9 +16,22 @@ const Header = ({ onCreatePostClick }) => {
 
   const handleLogout = async () => {
     // TODO: Add logout
-
+    try {
+    await account.deleteSession('current');
+    navigate('/login');
+  } catch (error){
+    console.error(error);
   }
+}
   // Todo: Generate Avatar 
+  
+  const avatars = new Avatars(client);
+
+  const result = avatars.getInitials(
+      `${user.name}`,
+      200,
+      200 
+  );
 
   return (
     <header className="sticky top-0 bg-gray-800 text-white px-4 py-4 flex justify-between items-center border-b-[1px] border-slate-500">

@@ -5,6 +5,8 @@ import RedditLogo from '../../public/redditlogo.svg';
 import DiscordLogo from '../../public/discordlogo.svg';
 import GithubLogo from '../../public/gitHublogo.svg';
 import { OAuthProvider } from 'appwrite';
+import { account } from '../utils/appwrite';
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -17,13 +19,10 @@ const Login = () => {
     e.preventDefault();
     try {
       // TODO: Add login
-      setTimeout(() => {
-          // dummy user
-          setUser({ email });
-      }, 2000);
-
-      navigate("/");
+     await account.createEmailPasswordSession( email , password);
+     navigate("/");
     } catch (error) {
+      console.error(error);
       alert('Login failed');
     }
   };
@@ -31,14 +30,39 @@ const Login = () => {
   // login with github
   const handleLoginWithGithub = async () => {
    // TODO: Add login with Github
+   try {
+    account.createOAuth2Session(OAuthProvider.Github ,
+      'http://localhost:5173/','http://localhost:5173/login');
+    } catch (error){
+    alert('Github Login failed');
+  }
+   
   }
 
   const handleLoginWithDiscord = () => {
    // TODO: Add login with Discord
+   try {
+    account.createOAuth2Session(OAuthProvider.Discord ,
+      'http://localhost:5173/','http://localhost:5173/login');
+    } catch (error){
+    alert('Discord Login failed');
+  }
   }
 
   const handleAnonymousLogin = () => {
     // TODO: Add anonymous login
+    try {
+        const promise = account.createAnonymousSession();
+        promise.then(function (response) {
+        if (response) {
+          navigate('/');
+        } // Success
+      }, function (error) {
+      console.log(error); // Failure
+});
+    } catch (error){
+      alert('Anonymous Login failed');
+    }
   }
 
   return (
@@ -88,9 +112,9 @@ const Login = () => {
             <span className="text-white">Continue with Discord</span>
           </button>
           <button className="flex items-center justify-center w-full px-2 py-2 bg-gray-700 rounded-full" onClick={handleAnonymousLogin}>
-            <span className="text-white">Continue Anonymously 🫣</span>
+            <span className="text-white">Continue Anonymously 😎</span>
           </button>
-        </div>
+        </div>   
 
         <p className="text-xs text-gray-400 text-center w-80">
           By continuing, you agree to our <a href="/user-agreement" className="underline">User Agreement</a> and acknowledge that you understand the <a href="/privacy-policy" className="underline">Privacy Policy</a>.

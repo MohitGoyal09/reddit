@@ -19,17 +19,7 @@ const RightBar = () => {
           <span className="text-lg">Events</span>
         </Link>
 
-        <Link to="https://lu.ma/oqelzoej" target="_blank" rel="noopener noreferrer" className="text-center rounded-lg">
-          <span className="text-sm border-b-[1px] pb-1">
-            <span className='text-blue-500 mr-2'>
-              React Delhi
-            </span>
-            x
-            <span className='text-red-500 ml-2'>
-              Appwrite
-            </span>
-          </span>
-        </Link>
+        
       </nav>
     </div>
   );

@@ -1,15 +1,21 @@
+import { Query } from "appwrite";
+import { database , storage } from "./appwrite";
+import {
+  DATABASE_ID,
+  POSTS_COLLECTION_ID,
+  BUCKET_ID,
+  COMMENTS_COLLECTION_ID,
+} from "./constants";
+
 // Posts API
 export const createPost = async (title, content, imageURL) => {
   try {
-    //TODO: Add Create
-    // Mock
-    const post = {
-      title,
-      content,
-      imageURL,
-      createdAt: Date.now(),
-    };
-    return post;
+    return await database.createDocument(
+      DATABASE_ID,
+      POSTS_COLLECTION_ID,
+      "unique()",
+      { title, content, imageURL }
+    );
   } catch (error) {
     console.error(error);
     throw error;
@@ -18,22 +24,11 @@ export const createPost = async (title, content, imageURL) => {
 
 export const fetchPosts = async () => {
   try {
-    //TODO: Add Fetch
-    // Mock Data
-    return [
-      {
-        title: "Post 1",
-        content: "Content 1",
-        imageURL: "https://via.placeholder.com/150",
-        createdAt: Date.now(),
-      },
-      {
-        title: "Post 2",
-        content: "Content 2",
-        imageURL: "https://via.placeholder.com/150",
-        createdAt: Date.now(),
-      },
-    ];
+    const response = await database.listDocuments(
+      DATABASE_ID,
+      POSTS_COLLECTION_ID
+    );
+    return response.documents;
   } catch (error) {
     console.error(error);
     throw error;
@@ -42,8 +37,11 @@ export const fetchPosts = async () => {
 
 export const deletePost = async (postId) => {
   try {
-    // TODO: Add Delete
-    throw new Error("Not implemented");
+    return await database.deleteDocument(
+      DATABASE_ID,
+      POSTS_COLLECTION_ID,
+      postId
+    );
   } catch (error) {
     console.error(error);
     throw error;
@@ -52,27 +50,24 @@ export const deletePost = async (postId) => {
 
 export const uploadImage = async (file) => {
   try {
-    //TODO: Add Upload
-    // Mock
-    return "https://via.placeholder.com/150";
+    const response = await storage.createFile(BUCKET_ID, "unique()", file);
+    return response;
   } catch (error) {
     console.error(error);
     throw error;
   }
 };
 
+
 // Comments API
 export const createComment = async (postId, content, userId) => {
   try {
-    // TODO: Create Comment
-    // Mock
-    const comment = {
-      postId,
-      content,
-      userId,
-      createdAt: Date.now(),
-    };
-    return comment;
+    return await database.createDocument(
+      DATABASE_ID,
+      COMMENTS_COLLECTION_ID,
+      "unique()",
+      { postId, content, userId }
+    );
   } catch (error) {
     console.error(error);
     throw error;
@@ -81,20 +76,12 @@ export const createComment = async (postId, content, userId) => {
 
 export const fetchComments = async (postId) => {
   try {
-    // TODO: Fetch Comments
-    // Mock Data
-    return [
-      {
-        content: "Comment 1",
-        userId: "user1",
-        createdAt: Date.now(),
-      },
-      {
-        content: "Comment 2",
-        userId: "user2",
-        createdAt: Date.now(),
-      },
-    ];
+    const response = await database.listDocuments(
+      DATABASE_ID,
+      COMMENTS_COLLECTION_ID,
+      [Query.contains("postId", [`${postId}`])]
+    );
+    return response.documents;
   } catch (error) {
     console.error(error);
     throw error;
@@ -102,5 +89,5 @@ export const fetchComments = async (postId) => {
 };
 
 export const getFilePreviewURL = (fileId) => {
-  throw new Error("Not implemented");
+  return storage.getFilePreview(BUCKET_ID, fileId).href;
 };
